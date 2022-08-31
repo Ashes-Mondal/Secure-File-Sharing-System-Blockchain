@@ -6,13 +6,17 @@ contract Ownable {
 
     mapping(address => bool) admins;
 
-    constructor() {
-        owner = msg.sender;
+    constructor(address _owner) {
+        owner = _owner;
     }
 
     modifier onlyOwner() {
         require(isOwner(), "Access Denied");
         _;
+    }
+
+    function getOwner() public view returns (address) {
+        return owner;
     }
 
     function isOwner() public view returns (bool) {

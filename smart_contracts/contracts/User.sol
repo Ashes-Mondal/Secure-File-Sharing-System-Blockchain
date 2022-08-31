@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "./Ownable.sol";
+import "./DocumentShared.sol";
 
 contract User is Ownable {
     event publicKey(address indexed owner, string pubK);
@@ -9,10 +10,10 @@ contract User is Ownable {
     userDetails public user;
     address[] docSharedLocation;
     address[] docsSharedWithUser;
-    mapping(address => sharedFile) docSharedByPeer;
+    mapping(address => sharedFile) docSharedByPeer; //mapping(sharedFileLocation => sharedFile)
 
     struct sharedFile {
-        address owner;
+        address fileOwnerRecordAddress;
         bool access;
     }
 
@@ -21,9 +22,13 @@ contract User is Ownable {
         string pubK;
     }
 
-    constructor(string memory _name, string memory _pubK) {
+    constructor(
+        string memory _name,
+        string memory _pubK,
+        address _owner
+    ) Ownable(_owner) {
         user = userDetails(_name, _pubK);
-        emit publicKey(msg.sender, _pubK);
+        emit publicKey(_owner, _pubK);
     }
 
     function getUserDetails() external view returns (userDetails memory) {
@@ -62,52 +67,77 @@ contract User is Ownable {
     }
 
     //File Sharing methods <--- For Peers to access
-    function addFileToSharedList(address _docAddr) public {
+    function addFileToSharedList(
+        address _docAddr,
+        address _docOwnerRecordAddress
+    ) public {
         require(
-            docSharedByPeer[_docAddr].owner == address(0),
+            docSharedByPeer[_docAddr].fileOwnerRecordAddress == address(0),
             "Document already shared"
         );
         docsSharedWithUser.push(_docAddr);
-        docSharedByPeer[_docAddr] = sharedFile(msg.sender, true);
+        docSharedByPeer[_docAddr] = sharedFile(_docOwnerRecordAddress, true);
     }
 
-    function addFileAccess(address _docAddr) public {
+    function addFileAccess(
+        address _docAddr,
+        address _docOwnerRecordAddress,
+        string memory _peerEncryptedKey
+    ) public {
         require(
-            docSharedByPeer[_docAddr].owner != address(0),
+            docSharedByPeer[_docAddr].fileOwnerRecordAddress != address(0),
             "No such document found"
         );
         require(
-            msg.sender == docSharedByPeer[_docAddr].owner,
+            _docOwnerRecordAddress ==
+                docSharedByPeer[_docAddr].fileOwnerRecordAddress,
             "Invalid User,not allowed to access"
         );
-        
+
         docSharedByPeer[_docAddr].access = true;
         bool flag = true;
-        for(uint256 i = 0;i<docsSharedWithUser.length;i++){
-            if(docsSharedWithUser[i] == _docAddr ){
+        for (uint256 i = 0; i < docsSharedWithUser.length; i++) {
+            if (docsSharedWithUser[i] == _docAddr) {
                 flag = false;
                 break;
             }
         }
-        if(flag)
-        docsSharedWithUser.push(_docAddr);
+        if (flag) {
+            DocumentShared docShared = DocumentShared(_docAddr);
+            docShared.setEncryptionKey(_peerEncryptedKey);
+            bool flag2 = true;
+            for (uint256 i = 0; i < docsSharedWithUser.length; i++) {
+                if (docsSharedWithUser[i] == address(0)) {
+                    docsSharedWithUser[i] = _docAddr;
+                    flag2 = false;
+                    break;
+                }
+            }
+            if(flag2)
+                docsSharedWithUser.push(_docAddr);
+        }
     }
 
-    function removeFileAccess(address _docAddr) public {
+    function removeFileAccess(address _docAddr, address _docOwnerRecordAddress)
+        public
+    {
         require(
-            docSharedByPeer[_docAddr].owner != address(0),
+            docSharedByPeer[_docAddr].fileOwnerRecordAddress != address(0),
             "No such document found"
         );
         require(
-            msg.sender == docSharedByPeer[_docAddr].owner,
+            _docOwnerRecordAddress ==
+                docSharedByPeer[_docAddr].fileOwnerRecordAddress,
             "Invalid User,not allowed to access"
         );
-        for(uint256 i = 0;i<docsSharedWithUser.length;i++){
-            if(docsSharedWithUser[i] == _docAddr ){
+        for (uint256 i = 0; i < docsSharedWithUser.length; i++) {
+            if (docsSharedWithUser[i] == _docAddr) {
                 delete docsSharedWithUser[i];
                 break;
             }
         }
+        DocumentShared docShared = DocumentShared(_docAddr);
+        docShared.setEncryptionKey("");
         docSharedByPeer[_docAddr].access = false;
     }
 }

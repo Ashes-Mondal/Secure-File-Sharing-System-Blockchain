@@ -4,13 +4,13 @@ pragma solidity ^0.8.9;
 import "./Document.sol";
 import "./User.sol";
 
-contract DocumentShared is Ownable {
+contract DocumentShared {
     docDetails public doc;
     string aesEncryptedKey; //Encrypted using public key of sharedTo peer
 
     struct docDetails {
-        address owner;
-        address sharedTo;
+        address ownerRecordAddress;
+        address sharedToRecordAddress;
         string docName;
         string docType;
         string docHash;
@@ -34,5 +34,13 @@ contract DocumentShared is Ownable {
 
     function getAesEncryptedKey() external view returns (string memory) {
         return aesEncryptedKey;
+    }
+
+    function setEncryptionKey(string memory _aesEncryptedKey) public {
+        require(
+            doc.ownerRecordAddress == msg.sender || doc.sharedToRecordAddress == msg.sender ,
+            "Failed to set encryptedKey"
+        );
+        aesEncryptedKey = _aesEncryptedKey;
     }
 }

@@ -15,7 +15,7 @@ contract Record {
     {
         require(isUserExist() == false, "Already signed in!");
 
-        User usr = new User(_name, _pubK);
+        User usr = new User(_name, _pubK,msg.sender);
         allUsers.push(usr);
         userRecord[msg.sender] = address(usr);
         emit registered(msg.sender, address(usr));

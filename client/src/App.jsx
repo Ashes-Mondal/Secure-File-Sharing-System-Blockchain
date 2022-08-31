@@ -2,10 +2,16 @@ import { useContext } from "react";
 import { useEffect, useState } from "react"
 import { FaUpload } from "react-icons/fa";
 import { FaSistrix } from "react-icons/fa";
+import { AiOutlineFileText } from "react-icons/ai";
 import SignUp from "./components/Signup";
 import Search from "./components/Search";
 import Upload from "./components/Uploads";
+import File from "./components/Files";
+import SharedList from "./components/SharedList";
 import { EthereumContext } from "./context/Ethereum";
+import { BsPeopleFill } from "react-icons/bs";
+import PeerFiles from "./components/PeerFiles";
+import { RiShareForward2Fill } from "react-icons/ri";
 
 const App = () => {
   const [tab, setTab] = useState(0)//{0:'uploads',1:'search'}
@@ -35,6 +41,18 @@ const App = () => {
                 Upload
               </div>
               <div className={`${tab == 1 ? "bg-indigo-500 underline" : ""}`} onClick={() => setTab(1)}>
+                <AiOutlineFileText size={16} />
+                My files
+              </div>
+              <div className={`${tab == 2 ? "bg-indigo-500 underline" : ""}`} onClick={() => setTab(2)}>
+                <BsPeopleFill size={16} />
+                Shared with me
+              </div>
+              <div className={`${tab == 3 ? "bg-indigo-500 underline" : ""}`} onClick={() => setTab(3)}>
+                <RiShareForward2Fill size={20} />
+                Shared by me
+              </div>
+              <div className={`${tab == 4 ? "bg-indigo-500 underline" : ""}`} onClick={() => setTab(4)}>
                 <FaSistrix size={16} />
                 Search
               </div>
@@ -43,7 +61,10 @@ const App = () => {
         }
         {!loggedIn && <SignUp />}
         {loggedIn && tab == 0 ? <Upload /> : null}
-        {loggedIn && tab == 1 ? <Search /> : null}
+        {loggedIn && tab == 1 ? <File /> : null}
+        {loggedIn && tab == 2 ? <PeerFiles /> : null}
+        {loggedIn && tab == 3 ? <SharedList /> : null}
+        {loggedIn && tab == 4 ? <Search /> : null}
       </main>
     </div>
   )

@@ -82,10 +82,7 @@ const Upload = () => {
 				alert("Reupload file correctly!")
 				return;
 			}
-			const encryptedKey = await encryptAES_key(publicKey,aesKey)
-			const decryptedKey = await decryptAES_key(privateKey,encryptedKey)
-			console.log(decryptedKey === aesKey)
-			// decrypt_and_download(file.name,buffer,decryptedKey)
+			const encryptedKey = await encryptAES_key(publicKey,aesKey);
 			const {path} = await Ipfs.add(buffer)
 			console.log("ipfsHash:", path)
 			await addFileToBlockChain(path,file,encryptedKey)
@@ -105,12 +102,12 @@ const Upload = () => {
 				</label>
 				<input disabled value={currentAccount} className="shadow appearance-none border rounded w-full py-2 px-3 border-black" id="address" type="text" placeholder="Address" />
 			</div>
-			<div className="p-4">
+			{/* <div className="p-4">
 				<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="address">
 					Private Key:
 				</label>
 				<input accept=".pem" onChange={onFileChange_privateKey} className="shadow appearance-none border rounded w-full py-2 px-3 border-black" id="Private_file" type="file" placeholder="file" />
-			</div>
+			</div> */}
 
 			{!file &&
 				(

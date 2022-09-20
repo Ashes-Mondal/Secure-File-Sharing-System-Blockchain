@@ -28,6 +28,7 @@ const PeerFiles = () => {
 		}
 		else {
 			alert("Invalid private key.")
+			setPrivateKey(null);
 			clearFileInput(document.getElementById("Private_file"))
 		}
 	}

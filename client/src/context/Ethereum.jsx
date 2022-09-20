@@ -140,6 +140,7 @@ export const EthereumProvider = ({ children }) => {
 
 		const usr = getUserContract(userRecordAddress);
 		await usr.shareFile(docContract.address)
+		console.log("Document Address:",docContract.address,"COMPLETED")
 	}
 
 	//!GET ALL FILES SHARED BY THE CLIENT

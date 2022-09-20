@@ -52,10 +52,10 @@ const App = () => {
                 <RiShareForward2Fill size={20} />
                 Shared by me
               </div>
-              <div className={`${tab == 4 ? "bg-indigo-500 underline" : ""}`} onClick={() => setTab(4)}>
+              {/* <div className={`${tab == 4 ? "bg-indigo-500 underline" : ""}`} onClick={() => setTab(4)}>
                 <FaSistrix size={16} />
                 Search
-              </div>
+              </div> */}
             </div>
           )
         }
@@ -64,7 +64,7 @@ const App = () => {
         {loggedIn && tab == 1 ? <File /> : null}
         {loggedIn && tab == 2 ? <PeerFiles /> : null}
         {loggedIn && tab == 3 ? <SharedList /> : null}
-        {loggedIn && tab == 4 ? <Search /> : null}
+        {/* {loggedIn && tab == 4 ? <Search /> : null} */}
       </main>
     </div>
   )
